@@ -1,0 +1,43 @@
+{
+  "name": "agile-board",
+  "version": "1.0.0",
+  "description": "Analogue of trello.com",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha ./server/tests/server.spec.js",
+    "test:watch": "mocha -w ./server/tests/server.spec.js",
+    "start": "node-dev ./server/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MikeErmolaev/agile-board.git"
+  },
+  "keywords": [
+    "angular2",
+    "expressJS",
+    "agile",
+    "board",
+    "fullstack",
+    "mongo"
+  ],
+  "author": "Mike Ermolaev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MikeErmolaev/agile-board/issues"
+  },
+  "homepage": "https://github.com/MikeErmolaev/agile-board#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "errorhandler": "^1.4.3",
+    "mocha": "^2.4.5",
+    "npm-watch": "^0.1.1",
+    "sinon": "^1.17.3",
+    "supertest": "^1.2.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "express": "^4.13.4",
+    "jwt-simple": "^0.5.0",
+    "morgan": "^1.7.0"
+  }
+}

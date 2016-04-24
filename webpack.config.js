@@ -4,7 +4,7 @@ const webpackMerge = require('webpack-merge');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const rimraf = require('rimraf');
-// const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const commonConfig = {
 	resolve: {
@@ -15,12 +15,16 @@ const commonConfig = {
 	resolveLoader: {
 		moduleDirectories: ['node_modules'],
 		moduleTemplates: ['*-loader', '*'],
-		extensions: ['.js']
+		extensions: ['', '.js']
 	},
 
-	devtool: 'source-map',
+	devtool: 'cheap-module-eval-source-map',
 
 	module: {
+		noParse: [
+			/dist/,
+			/bundles/
+		],
 		loaders: [{
 			test: /\.ts$/,
 			exclude: /\/node_modules\//,
@@ -54,8 +58,7 @@ const commonConfig = {
 			name: 'common',
 			minChunks: Infinity
 		}),
-		new ExtractTextPlugin('[name].css')/*,
-		new HtmlWebpackPlugin()*/
+		new ExtractTextPlugin('[name].css')
 	],
 
 	devServer: {
@@ -65,15 +68,41 @@ const commonConfig = {
 };
 
 const clientConfig = {
-	entry: './client/main',
+	target: 'web',
+	entry: {
+		main: './client/main',
+		vendor: [
+			'./node_modules/es6-shim/es6-shim.min',
+			'./node_modules/systemjs/dist/system-polyfills',
+			'./node_modules/angular2/bundles/angular2-polyfills',
+			'./node_modules/systemjs/dist/system.src',
+			'./node_modules/rxjs/bundles/Rx.min',
+			'./node_modules/angular2/bundles/angular2.dev.js',
+			'./node_modules/angular2/bundles/router.dev.js'
+		]
+	},
+	resolve: {
+		root: path.resolve('./client/')
+	},
 	output: {
 		path: path.join(__dirname, 'dist', 'client'),
-		filename: '[name].js'
-	}
+		filename: '[name].js',
+		chunkfilename: '[id].js'
+	},
+	plugins: [
+		new HtmlWebpackPlugin({
+			template: 'index.ejs',
+			inject: false
+		})
+	]
 };
 
 const serverConfig = {
+	target: 'node',
 	entry: './server',
+	resolve: {
+		root: path.resolve('./server')
+	},
 	output: {
 		path: path.join(__dirname, 'dist', 'server')
 	},

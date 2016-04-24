@@ -21,7 +21,7 @@
     "fullstack",
     "mongo"
   ],
-  "author": "Mike Ermolaev",
+  "author": "Mike Yermolayev",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/MikeErmolaev/agile-board/issues"
@@ -34,7 +34,7 @@
     "errorhandler": "^1.4.3",
     "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.8.5",
-    "html-webpack-plugin": "^2.15.0",
+    "html-webpack-plugin": "^2.16.0",
     "mocha": "^2.4.5",
     "npm-watch": "^0.1.1",
     "rimraf": "^2.5.2",

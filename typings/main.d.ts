@@ -7,3 +7,4 @@
 /// <reference path="main/ambient/mongoose/index.d.ts" />
 /// <reference path="main/ambient/node/index.d.ts" />
 /// <reference path="main/ambient/serve-static/index.d.ts" />
+/// <reference path="main/definitions/rxjs/index.d.ts" />

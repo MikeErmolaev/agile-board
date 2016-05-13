@@ -3,12 +3,7 @@ import { RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS } from 'angular2/route
 
 @Component({
     selector: 'home',
-    template: `
-	    <h1>Welcome to agile-board!</h1>
-	    <h2>Please log in to get access to our services</h2>
-	    <a [routerLink]="['Registration']">Register</a>
-	    <a [routerLink]="['Login']">Log in</a>	    
-	`,
+    template: require('./template/home.component.html'),
 	directives: [ROUTER_DIRECTIVES],
 	providers: []
 })

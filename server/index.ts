@@ -12,6 +12,15 @@ const errorHandler = require('errorhandler');
 const bodyParser = require('body-parser');
 const routes = require('./routes/');
 const path = require('path');
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost/agile-board');
+
+const db = mongoose.connection;
+
+db.once('open', () => console.log('[DB]: Connected'))
+	.on('error', err => console.log(err.message))
+	.on('disconnected', () => console.log('[DB: Disconnected'));
 
 /*const key = fs.readFileSync(`${__dirname}/sparky-key.pem`);
 const cert = fs.readFileSync(`${__dirname}/sparky-cert.pem`);
@@ -26,7 +35,10 @@ const app = express();
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
-app.use(express.static(path.resolve('/../dist/client')));
+
+console.log(`Static content is being served from ${path.resolve(__dirname, '..', 'dist', 'client')}`);
+
+app.use(express.static(path.resolve(__dirname, '..', 'dist', 'client')));
 
 app.all('/favicon.ico', (req, res) => {
 	res.status(200).end();

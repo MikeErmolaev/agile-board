@@ -1,0 +1,73 @@
+@import 'nib'
+
+global-reset()
+
+$footerHeight = 64px
+$headerHeight = 30px
+
+body
+	font 18px Helvetica, Arial, sans-serif
+	min-height 100%
+	height auto
+	position relative
+	
+html
+	height 100%
+	
+footer
+	absolute bottom
+	height $footerHeight
+	width 100%
+	font-size 12px 
+	text-align center
+	line-height @height
+	background-color #68b3e8
+	
+main
+	padding-top $headerHeight
+	padding-bottom $footerHeight
+	text-align center
+	
+a
+	text-decoration none
+	color none
+	&:active, &:hover, &:visited
+		color inherit
+		
+h1 
+	font-weight 700
+	font-size 32px
+	
+h2 
+	font-weight 400
+	font-size 24px
+	
+header
+	absolute top
+	width 100%
+	height $headerHeight
+	
+	
+.wavy-border
+	position absolute
+	height 12px
+	bottom $footerHeight
+	width 100%
+	background-image url('./wavy-border.png')
+	background-position left bottom
+	background-repeat repeat-x
+	
+.ng-valid[required]
+	border-left 5px solid #42A948
+	
+.form-control
+	width 200px
+	border-radius 4px
+	border 1px solid #ccc
+	height 20px
+	line-height @height
+	transition border-color ease-in-out .15s, box-shadow ease-in-out .15s
+
+.ng-invalid
+	border-left 5px solid #a94442
+	

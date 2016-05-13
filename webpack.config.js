@@ -7,9 +7,10 @@ const rimraf = require('rimraf');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const commonConfig = {
+	context: __dirname,
 	resolve: {
 		moduleDirectories: ['node_modules'],
-		extensions: ['', '.ts', '.js', 'styl']
+		extensions: ['', '.ts', '.js', 'styl', 'html']
 	},
 
 	resolveLoader: {
@@ -18,33 +19,45 @@ const commonConfig = {
 		extensions: ['', '.js']
 	},
 
-	devtool: 'cheap-module-eval-source-map',
+	devtool: 'source-map',
 
 	module: {
 		noParse: [
-			/dist/,
-			/bundles/
+			/systemjs\\dist/
 		],
+		
 		loaders: [{
 			test: /\.ts$/,
 			exclude: /\/node_modules\//,
 			loader: 'ts'
 		}, {
-			test: /\.styl$/,
+			test: /^.*\\\w*\.styl$/,
 			exclude: /\/node_modules\//,
 			loader: ExtractTextPlugin.extract('style', 'css!stylus?resolve url')
 		}, {
+			test: /\.component\.styl$/,
+			loader: 'raw!stylus?resolve url'
+		}, {
 			test: /\.css$/,
 			exclude: /\/node_modules\//,
-			loader: ExtractTextPlugin.extract('style', 'css')
+			loader: 'raw!css'
 		}, {
 			test: /\.(png|svg|ttf)$/,
 			loader: 'file?name=[path][name].[ext]'
+		}, {
+			test: /\.html$/,
+			loader: 'raw'
 		}]
 	},
 
+	stylus: {
+		use: [require('nib')()],
+		import: ['~nib/lib/nib/index.styl']
+	},
+
 	output: {
-		filename: 'bundle.js'
+		filename: 'bundle.js',
+		path: './dist'
 	},
 
 	plugins: [
@@ -54,11 +67,11 @@ const commonConfig = {
 			}
 		},
 		new webpack.NoErrorsPlugin(),
-		new webpack.optimize.CommonsChunkPlugin({
+/*		new webpack.optimize.CommonsChunkPlugin({
 			name: 'common',
 			minChunks: Infinity
-		}),
-		new ExtractTextPlugin('[name].css')
+		}),*/
+		new ExtractTextPlugin('[name].css', { allChunks:true })
 	],
 
 	devServer: {
@@ -68,45 +81,53 @@ const commonConfig = {
 };
 
 const clientConfig = {
+	context: path.join(__dirname, 'src'),
 	target: 'web',
 	entry: {
-		main: './client/main',
+		app: './main',
 		vendor: [
-			'./node_modules/es6-shim/es6-shim.min',
-			'./node_modules/systemjs/dist/system-polyfills',
-			'./node_modules/angular2/bundles/angular2-polyfills',
-			'./node_modules/systemjs/dist/system.src',
-			'./node_modules/rxjs/bundles/Rx.min',
-			'./node_modules/angular2/bundles/angular2.dev.js',
-			'./node_modules/angular2/bundles/router.dev.js'
+			'../node_modules/es6-shim/es6-shim.min',
+			'../node_modules/systemjs/dist/system-polyfills',
+			'../node_modules/angular2/bundles/angular2-polyfills',
+			'../node_modules/systemjs/dist/system.src',
+			'rxjs/Rx',
+			'angular2/router',
+			'../node_modules/angular2/bundles/angular2.dev.js'
 		]
 	},
 	resolve: {
-		root: path.resolve('./client/')
+		root: path.resolve('src')
 	},
 	output: {
-		path: path.join(__dirname, 'dist', 'client'),
-		filename: '[name].js',
+		path: path.resolve(__dirname, 'dist', 'client'),
+		filename: '[name].bundle.js',
 		chunkfilename: '[id].js'
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
-			template: 'index.ejs',
+			template: '../index.ejs',
 			inject: false
+		}),
+		new webpack.optimize.CommonsChunkPlugin({
+			name: 'vendor',
+			filename: 'vendor.bundle.js'
 		})
 	]
 };
 
 const serverConfig = {
 	target: 'node',
-	entry: './server',
+	entry: path.resolve('server'),
 	resolve: {
-		root: path.resolve('./server')
+		root: path.resolve('server')
 	},
 	output: {
-		path: path.join(__dirname, 'dist', 'server')
+		path: path.resolve(__dirname, 'dist', 'server')
 	},
-	externals: checkNodeImport
+	externals: checkNodeImport,
+	node: {
+		__dirname: true
+	}
 };
 
 module.exports = [

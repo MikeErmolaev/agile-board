@@ -8,5 +8,8 @@
 		"mime": "registry:dt/mime#0.0.0+20160316155526",
 		"mongoose": "registry:dt/mongoose#3.8.5+20160316155526",
 		"node": "registry:dt/node#4.0.0+20160412142033"
+	},
+	"dependencies": {
+		"rxjs": "npm:rxjs/rx.d.ts"
 	}
 }

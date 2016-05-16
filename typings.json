@@ -6,8 +6,8 @@
 		"jwt-simple": "registry:dt/jwt-simple#0.2.0+20160316155526",
 		"lodash": "registry:dt/lodash#3.10.0+20160330154726",
 		"mime": "registry:dt/mime#0.0.0+20160316155526",
-		"mongoose": "registry:dt/mongoose#3.8.5+20160316155526",
-		"node": "registry:dt/node#4.0.0+20160412142033"
+		"mongoose": "registry:dt/mongoose#3.8.5+20160505185535",
+		"node": "registry:dt/node#4.0.0+20160509154515"
 	},
 	"dependencies": {
 		"rxjs": "npm:rxjs/rx.d.ts"

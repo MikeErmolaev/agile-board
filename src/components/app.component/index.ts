@@ -3,15 +3,15 @@ import { RouteConfig } from 'angular2/router';
 import { WelcomeComponent } from '../welcome.component';
 import { AuthComponent } from '../auth.component';
 import { HomeComponent } from '../home.component';
-import { HeaderComponent } from '../header.component';
 import { LoggedInRouterOutlet } from '../../directives/logged-in-router-outlet.directive';
+import { ModalContainer } from '../modal-container.component';
 
 require('generic/main.styl');
 
 @Component({
     selector: 'app',
     template: require('./template/app.component.html'),
-	directives: [LoggedInRouterOutlet, HeaderComponent]
+	directives: [LoggedInRouterOutlet, ModalContainer]
 })
 @RouteConfig([
 	{
@@ -25,10 +25,14 @@ require('generic/main.styl');
 		component: AuthComponent
 	},
 	{
-		path: '/home',
+		path: '/',
 		name: 'Home',
 		component: HomeComponent,
 		useAsDefault: true
+	},
+	{
+		path: '/**',
+		redirectTo: ['Home']
 	}
 ])
 export class AppComponent { };

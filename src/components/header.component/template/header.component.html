@@ -1,4 +1,5 @@
-<header *ngIf="authService.isAuthorized()">
+<header>
 	<h3>Agile-Board</h3>
+	<h2>{{ currentUser.name }}</h2>
 	<button (click)="logOut()">Log out</button>
 </header>

@@ -2,12 +2,10 @@
 
 const router = require('express').Router();
 const jwt = require('../utils/jwt');
-const User = require('../models/User');
+const UserDao = require('../models/User');
 
 router.post('/api/signup', (req, res, next) => {
-	const email = req.body.email;
-	const password = req.boy.password;
-	const name = req.body.name;
+	const { email, password, name } = req.body;
 
 	if (!email || !password || !name) {
 		const error = new Error();
@@ -17,33 +15,26 @@ router.post('/api/signup', (req, res, next) => {
 		return;
 	}
 
-	const newUser = new User({
-		email: req.body.email,
-		password: req.body.password,
-		name: req.body.name
-	});
+	UserDao.saveUser(email, password, name).then(user => {
+		console.log('USER ID AFTER: ' + user.id)
 
-	newUser.save((err) => {
-		if (err) {
-			next(err);
-		} else {
-			const payload = {
-				sub: req.body.email
-			};
-			const token = jwt.generateToken(payload);
-			res.send({ 
-				data: {
-					success: true,
-					token
-				}
-			});
-		}
-	});	
+		const payload = {
+			sub: user.id
+		};
+		const token = jwt.generateToken(payload);
+
+		res.send({ 
+			data: {
+				success: true,
+				user, 
+				token
+			}
+		});
+	}).catch(next);
 });
 
 router.post('/api/login', (req, res, next) => {
-	const email = req.body.email;
-	const password = req.body.password;
+	const { email, password } = req.body;
 
 	if (!email || !password) {
 		const error = new Error();
@@ -53,32 +44,20 @@ router.post('/api/login', (req, res, next) => {
 		return;
 	}
 
-	User.findOne({ email }, (err, user) => {
-		if (err) {
-			next(err);
-		}
+	UserDao.authenticateUser(email, password).then(user => {
+		const payload = {
+			sub: user.id
+		};
+		const token = jwt.generateToken(payload);
 
-		user.comparePassword(password, (err, isMatch) => {
-			if (err) {
-				next(err);
-			} else {
-				if (isMatch) {
-					const payload = {
-						sub: email
-					};
-					const token = jwt.generateToken(payload);
-					res.send({ 
-						data: {
-							success: true,
-							token
-						}
-					});
-				} else {
-					res.sendStatus(401);
-				}
+		res.send({ 
+			data: {
+				success: true,
+				user,
+				token
 			}
 		});
-	});
+	}, res.sendStatus.bind(res)).catch(next);
 });
 
 module.exports = router;

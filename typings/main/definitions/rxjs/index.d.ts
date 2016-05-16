@@ -753,16 +753,6 @@ export class FromObservable<T> extends Observable<T> {
     private ish;
     private scheduler;
     constructor(ish: ObservableInput<T>, scheduler: Scheduler);
-    /**
-     * @param ish
-     * @param mapFnOrScheduler
-     * @param thisArg
-     * @param lastScheduler
-     * @return {any}
-     * @static true
-     * @name from
-     * @owner Observable
-     */
     static create<T>(ish: ObservableInput<T>, scheduler?: Scheduler): Observable<T>;
     static create<T, R>(ish: ArrayLike<T>, mapFn: (x: any, y: number) => R, thisArg?: any, scheduler?: Scheduler): Observable<R>;
     protected _subscribe(subscriber: Subscriber<T>): any;
@@ -817,15 +807,41 @@ export class FromEventObservable<T, R> extends Observable<T> {
     private eventName;
     private selector;
     /**
-     * @param sourceObj
-     * @param eventName
-     * @param selector
-     * @return {FromEventObservable}
+     * Creates an Observable that emits events of a specific type coming from the
+     * given event target.
+     *
+     * <span class="informal">Creates an Observable from DOM events, or Node
+     * EventEmitter events or others.</span>
+     *
+     * <img src="./img/fromEvent.png" width="100%">
+     *
+     * Creates an Observable by attaching an event listener to an "event target",
+     * which may be an object with `addEventListener` and `removeEventListener`,
+     * a Node.js EventEmitter, a jQuery style EventEmitter, a NodeList from the
+     * DOM, or an HTMLCollection from the DOM. The event handler is attached when
+     * the output Observable is subscribed, and removed when the Subscription is
+     * unsubscribed.
+     *
+     * @example <caption>Emits clicks happening on the DOM document</caption>
+     * var clicks = Rx.Observable.fromEvent(document, 'click');
+     * clicks.subscribe(x => console.log(x));
+     *
+     * @see {@link from}
+     * @see {@link fromEventPattern}
+     *
+     * @param {EventTargetLike} target The DOMElement, event target, Node.js
+     * EventEmitter, NodeList or HTMLCollection to attach the event handler to.
+     * @param {string} eventName The event name of interest, being emitted by the
+     * `target`.
+     * @param {function(...args: any): T} [selector] An optional function to
+     * post-process results. It takes the arguments from the event handler and
+     * should return a single value.
+     * @return {Observable<T>}
      * @static true
      * @name fromEvent
      * @owner Observable
      */
-    static create<T>(sourceObj: EventTargetLike, eventName: string, selector?: (...args: Array<any>) => T): Observable<T>;
+    static create<T>(target: EventTargetLike, eventName: string, selector?: (...args: Array<any>) => T): Observable<T>;
     constructor(sourceObj: EventTargetLike, eventName: string, selector?: (...args: Array<any>) => T);
     private static setupSubscription<T>(sourceObj, eventName, handler, subscriber);
     protected _subscribe(subscriber: Subscriber<T>): void;
@@ -871,10 +887,48 @@ export class FromEventPatternObservable<T, R> extends Observable<T> {
     private removeHandler;
     private selector;
     /**
-     * @param addHandler
-     * @param removeHandler
-     * @param selector
-     * @return {FromEventPatternObservable}
+     * Creates an Observable from an API based on addHandler/removeHandler
+     * functions.
+     *
+     * <span class="informal">Converts any addHandler/removeHandler API to an
+     * Observable.</span>
+     *
+     * <img src="./img/fromEventPattern.png" width="100%">
+     *
+     * Creates an Observable by using the `addHandler` and `removeHandler`
+     * functions to add and remove the handlers, with an optional selector
+     * function to project the event arguments to a result. The `addHandler` is
+     * called when the output Observable is subscribed, and `removeHandler` is
+     * called when the Subscription is unsubscribed.
+     *
+     * @example <caption>Emits clicks happening on the DOM document</caption>
+     * function addClickHandler(handler) {
+     *   document.addEventListener('click', handler);
+     * }
+     *
+     * function removeClickHandler(handler) {
+     *   document.removeEventListener('click', handler);
+     * }
+     *
+     * var clicks = Rx.Observable.fromEventPattern(
+     *   addClickHandler,
+     *   removeClickHandler
+     * );
+     * clicks.subscribe(x => console.log(x));
+     *
+     * @see {@link from}
+     * @see {@link fromEvent}
+     *
+     * @param {function(handler: Function): any} addHandler A function that takes
+     * a `handler` function as argument and attaches it somehow to the actual
+     * source of events.
+     * @param {function(handler: Function): void} removeHandler A function that
+     * takes a `handler` function as argument and removes it in case it was
+     * previously attached using `addHandler`.
+     * @param {function(...args: any): T} [selector] An optional function to
+     * post-process results. It takes the arguments from the event handler and
+     * should return a single value.
+     * @return {Observable<T>}
      * @static true
      * @name fromEventPattern
      * @owner Observable
@@ -926,9 +980,27 @@ export class PromiseObservable<T> extends Observable<T> {
     scheduler: Scheduler;
     value: T;
     /**
-     * @param promise
-     * @param scheduler
-     * @return {PromiseObservable}
+     * Converts a Promise to an Observable.
+     *
+     * <span class="informal">Returns an Observable that just emits the Promise's
+     * resolved value, then completes.</span>
+     *
+     * Converts an ES2015 Promise or a Promises/A+ spec compliant Promise to an
+     * Observable. If the Promise resolves with a value, the output Observable
+     * emits that resolved value as a `next`, and then completes. If the Promise
+     * is rejected, then the output Observable emits the corresponding Error.
+     *
+     * @example <caption>Convert the Promise returned by Fetch to an Observable</caption>
+     * var result = Rx.Observable.fromPromise(fetch('http://myserver.com/'));
+     * result.subscribe(x => console.log(x), e => console.error(e));
+     *
+     * @see {@link bindCallback}
+     * @see {@link from}
+     *
+     * @param {Promise<T>} promise The promise to be converted.
+     * @param {Scheduler} [scheduler] An optional Scheduler to use for scheduling
+     * the delivery of the resolved value (or the rejection).
+     * @return {Observable<T>} An Observable which wraps the Promise.
      * @static true
      * @name fromPromise
      * @owner Observable
@@ -959,6 +1031,169 @@ import { fromPromise as staticFromPromise } from '~rxjs/observable/fromPromise';
 module '~rxjs/Observable' {
     namespace Observable {
         let fromPromise: typeof staticFromPromise;
+    }
+}
+}
+
+// Generated by typings
+// Source: node_modules/rxjs/observable/GenerateObservable.d.ts
+declare module '~rxjs/observable/GenerateObservable' {
+import { Observable } from '~rxjs/Observable';
+import { Scheduler } from '~rxjs/Scheduler';
+import { Subscriber } from '~rxjs/Subscriber';
+import { Subscription } from '~rxjs/Subscription';
+export type ConditionFunc<S> = (state: S) => boolean;
+export type IterateFunc<S> = (state: S) => S;
+export type ResultFunc<S, T> = (state: S) => T;
+export interface GenerateBaseOptions<S> {
+    /**
+     * Inital state.
+    */
+    initialState: S;
+    /**
+     * Condition function that accepts state and returns boolean.
+     * When it returns false, the generator stops.
+     * If not specified, a generator never stops.
+    */
+    condition?: ConditionFunc<S>;
+    /**
+     * Iterate function that accepts state and returns new state.
+     */
+    iterate: IterateFunc<S>;
+    /**
+     * Scheduler to use for generation process.
+     * By default, a generator starts immediately.
+    */
+    scheduler?: Scheduler;
+}
+export interface GenerateOptions<T, S> extends GenerateBaseOptions<S> {
+    /**
+     * Result selection function that accepts state and returns a value to emit.
+     */
+    resultSelector: ResultFunc<S, T>;
+}
+/**
+ * We need this JSDoc comment for affecting ESDoc.
+ * @extends {Ignored}
+ * @hide true
+ */
+export class GenerateObservable<T, S> extends Observable<T> {
+    private initialState;
+    private condition;
+    private iterate;
+    private resultSelector;
+    private scheduler;
+    constructor(initialState: S, condition: ConditionFunc<S>, iterate: IterateFunc<S>, resultSelector: ResultFunc<S, T>, scheduler?: Scheduler);
+    /**
+     * Generates an observable sequence by running a state-driven loop
+     * producing the sequence's elements, using the specified scheduler
+     * to send out observer messages.
+     *
+     * <img src="./img/generate.png" width="100%">
+     *
+     * @example <caption>Produces sequence of 0, 1, 2, ... 9, then completes.</caption>
+     * var res = Rx.Observable.generate(0, x => x < 10, x => x + 1, x => x);
+     *
+     * @example <caption>Using asap scheduler, produces sequence of 2, 3, 5, then completes.</caption>
+     * var res = Rx.Observable.generate(1, x => x < 5, x => x * 2, x => x + 1, Rx.Scheduler.asap);
+     *
+     * @see {@link from}
+     * @see {@link create}
+     *
+     * @param {S} initialState Initial state.
+     * @param {function (state: S): boolean} condition Condition to terminate generation (upon returning false).
+     * @param {function (state: S): S} iterate Iteration step function.
+     * @param {function (state: S): T} resultSelector Selector function for results produced in the sequence.
+     * @param {Scheduler} [scheduler] A {@link Scheduler} on which to run the generator loop. If not provided, defaults to emit immediately.
+     * @returns {Observable<T>} The generated sequence.
+     */
+    static create<T, S>(initialState: S, condition: ConditionFunc<S>, iterate: IterateFunc<S>, resultSelector: ResultFunc<S, T>, scheduler?: Scheduler): Observable<T>;
+    /**
+     * Generates an observable sequence by running a state-driven loop
+     * producing the sequence's elements, using the specified scheduler
+     * to send out observer messages.
+     * The overload uses state as an emitted value.
+     *
+     * <img src="./img/generate.png" width="100%">
+     *
+     * @example <caption>Produces sequence of 0, 1, 2, ... 9, then completes.</caption>
+     * var res = Rx.Observable.generate(0, x => x < 10, x => x + 1);
+     *
+     * @example <caption>Using asap scheduler, produces sequence of 1, 2, 4, then completes.</caption>
+     * var res = Rx.Observable.generate(1, x => x < 5, x => x * 2, Rx.Scheduler.asap);
+     *
+     * @see {@link from}
+     * @see {@link create}
+     *
+     * @param {S} initialState Initial state.
+     * @param {function (state: S): boolean} condition Condition to terminate generation (upon returning false).
+     * @param {function (state: S): S} iterate Iteration step function.
+     * @param {Scheduler} [scheduler] A {@link Scheduler} on which to run the generator loop. If not provided, defaults to emit immediately.
+     * @returns {Observable<S>} The generated sequence.
+     */
+    static create<S>(initialState: S, condition: ConditionFunc<S>, iterate: IterateFunc<S>, scheduler?: Scheduler): Observable<S>;
+    /**
+     * Generates an observable sequence by running a state-driven loop
+     * producing the sequence's elements, using the specified scheduler
+     * to send out observer messages.
+     * The overload accepts options object that might contain inital state, iterate,
+     * condition and scheduler.
+     *
+     * <img src="./img/generate.png" width="100%">
+     *
+     * @example <caption>Produces sequence of 0, 1, 2, ... 9, then completes.</caption>
+     * var res = Rx.Observable.generate({
+     *   initialState: 0,
+     *   condition: x => x < 10,
+     *   iterate: x => x + 1
+     * });
+     *
+     * @see {@link from}
+     * @see {@link create}
+     *
+     * @param {GenerateBaseOptions<S>} options Object that must contain initialState, iterate and might contain condition and scheduler.
+     * @returns {Observable<S>} The generated sequence.
+     */
+    static create<S>(options: GenerateBaseOptions<S>): Observable<S>;
+    /**
+     * Generates an observable sequence by running a state-driven loop
+     * producing the sequence's elements, using the specified scheduler
+     * to send out observer messages.
+     * The overload accepts options object that might contain inital state, iterate,
+     * condition, result selector and scheduler.
+     *
+     * <img src="./img/generate.png" width="100%">
+     *
+     * @example <caption>Produces sequence of 0, 1, 2, ... 9, then completes.</caption>
+     * var res = Rx.Observable.generate({
+     *   initialState: 0,
+     *   condition: x => x < 10,
+     *   iterate: x => x + 1,
+     *   resultSelector: x => x
+     * });
+     *
+     * @see {@link from}
+     * @see {@link create}
+     *
+     * @param {GenerateOptions<T, S>} options Object that must contain initialState, iterate, resultSelector and might contain condition and scheduler.
+     * @returns {Observable<T>} The generated sequence.
+     */
+    static create<T, S>(options: GenerateOptions<T, S>): Observable<T>;
+    protected _subscribe(subscriber: Subscriber<any>): Subscription | Function | void;
+    private static dispatch<T, S>(state);
+}
+}
+declare module 'rxjs/observable/GenerateObservable' {
+export * from '~rxjs/observable/GenerateObservable';
+}
+
+// Generated by typings
+// Source: node_modules/rxjs/add/observable/generate.d.ts
+declare module '~rxjs/add/observable/generate' {
+import { GenerateObservable } from '~rxjs/observable/GenerateObservable';
+module '~rxjs/Observable' {
+    namespace Observable {
+        let generate: typeof GenerateObservable.create;
     }
 }
 }
@@ -1531,6 +1766,7 @@ import { Observable } from '~rxjs/Observable';
  * @see {@link bufferTime}
  * @see {@link bufferToggle}
  * @see {@link bufferWhen}
+ * @see {@link pairwise}
  * @see {@link windowCount}
  *
  * @param {number} bufferSize The maximum size of the buffer emitted.
@@ -2299,14 +2535,44 @@ module '~rxjs/Observable' {
 declare module '~rxjs/operator/debounce' {
 import { Observable, SubscribableOrPromise } from '~rxjs/Observable';
 /**
- * Returns the source Observable delayed by the computed debounce duration,
- * with the duration lengthened if a new source item arrives before the delay
- * duration ends.
- * In practice, for each item emitted on the source, this operator holds the
- * latest item, waits for a silence as long as the `durationSelector` specifies,
- * and only then emits the latest source item on the result Observable.
- * @param {function} durationSelector function for computing the timeout duration for each item.
- * @return {Observable} an Observable the same as source Observable, but drops items.
+ * Emits a value from the source Observable only after a particular time span
+ * determined by another Observable has passed without another source emission.
+ *
+ * <span class="informal">It's like {@link debounceTime}, but the time span of
+ * emission silence is determined by a second Observable.</span>
+ *
+ * <img src="./img/debounce.png" width="100%">
+ *
+ * `debounce` delays values emitted by the source Observable, but drops previous
+ * pending delayed emissions if a new value arrives on the source Observable.
+ * This operator keeps track of the most recent value from the source
+ * Observable, and spawns a duration Observable by calling the
+ * `durationSelector` function. The value is emitted only when the duration
+ * Observable emits a value or completes, and if no other value was emitted on
+ * the source Observable since the duration Observable was spawned. If a new
+ * value appears before the duration Observable emits, the previous value will
+ * be dropped and will not be emitted on the output Observable.
+ *
+ * Like {@link debounceTime}, this is a rate-limiting operator, and also a
+ * delay-like operator since output emissions do not necessarily occur at the
+ * same time as they did on the source Observable.
+ *
+ * @example <caption>Emit the most recent click after a burst of clicks</caption>
+ * var clicks = Rx.Observable.fromEvent(document, 'click');
+ * var result = clicks.debounce(() => Rx.Observable.interval(1000));
+ * result.subscribe(x => console.log(x));
+ *
+ * @see {@link audit}
+ * @see {@link debounceTime}
+ * @see {@link delayWhen}
+ * @see {@link throttle}
+ *
+ * @param {function(value: T): Observable|Promise} durationSelector A function
+ * that receives a value from the source Observable, for computing the timeout
+ * duration for each source value, returned as an Observable or a Promise.
+ * @return {Observable} An Observable that delays the emissions of the source
+ * Observable by the specified duration Observable returned by
+ * `durationSelector`, and may drop some values if they occur too frequently.
  * @method debounce
  * @owner Observable
  */
@@ -2336,16 +2602,48 @@ declare module '~rxjs/operator/debounceTime' {
 import { Observable } from '~rxjs/Observable';
 import { Scheduler } from '~rxjs/Scheduler';
 /**
- * Returns the source Observable delayed by the computed debounce duration,
- * with the duration lengthened if a new source item arrives before the delay
- * duration ends.
- * In practice, for each item emitted on the source, this operator holds the
- * latest item, waits for a silence for the `dueTime` length, and only then
- * emits the latest source item on the result Observable.
- * Optionally takes a scheduler for manging timers.
- * @param {number} dueTime the timeout value for the window of time required to not drop the item.
- * @param {Scheduler} [scheduler] the Scheduler to use for managing the timers that handle the timeout for each item.
- * @return {Observable} an Observable the same as source Observable, but drops items.
+ * Emits a value from the source Observable only after a particular time span
+ * has passed without another source emission.
+ *
+ * <span class="informal">It's like {@link delay}, but passes only the most
+ * recent value from each burst of emissions.</span>
+ *
+ * <img src="./img/debounceTime.png" width="100%">
+ *
+ * `debounceTime` delays values emitted by the source Observable, but drops
+ * previous pending delayed emissions if a new value arrives on the source
+ * Observable. This operator keeps track of the most recent value from the
+ * source Observable, and emits that only when `dueTime` enough time has passed
+ * without any other value appearing on the source Observable. If a new value
+ * appears before `dueTime` silence occurs, the previous value will be dropped
+ * and will not be emitted on the output Observable.
+ *
+ * This is a rate-limiting operator, because it is impossible for more than one
+ * value to be emitted in any time window of duration `dueTime`, but it is also
+ * a delay-like operator since output emissions do not occur at the same time as
+ * they did on the source Observable. Optionally takes a {@link Scheduler} for
+ * managing timers.
+ *
+ * @example <caption>Emit the most recent click after a burst of clicks</caption>
+ * var clicks = Rx.Observable.fromEvent(document, 'click');
+ * var result = clicks.debounceTime(1000);
+ * result.subscribe(x => console.log(x));
+ *
+ * @see {@link auditTime}
+ * @see {@link debounce}
+ * @see {@link delay}
+ * @see {@link sampleTime}
+ * @see {@link throttleTime}
+ *
+ * @param {number} dueTime The timeout duration in milliseconds (or the time
+ * unit determined internally by the optional `scheduler`) for the window of
+ * time required to wait for emission silence before emitting the most recent
+ * source value.
+ * @param {Scheduler} [scheduler=async] The {@link Scheduler} to use for
+ * managing the timers that handle the timeout for each value.
+ * @return {Observable} An Observable that delays the emissions of the source
+ * Observable by the specified `dueTime`, and may drop some values if they occur
+ * too frequently.
  * @method debounceTime
  * @owner Observable
  */
@@ -2374,9 +2672,32 @@ module '~rxjs/Observable' {
 declare module '~rxjs/operator/defaultIfEmpty' {
 import { Observable } from '~rxjs/Observable';
 /**
- * Returns an Observable that emits the elements of the source or a specified default value if empty.
- * @param {any} defaultValue the default value used if source is empty; defaults to null.
- * @return {Observable} an Observable of the items emitted by the where empty values are replaced by the specified default value or null.
+ * Emits a given value if the source Observable completes without emitting any
+ * `next` value, otherwise mirrors the source Observable.
+ *
+ * <span class="informal">If the source Observable turns out to be empty, then
+ * this operator will emit a default value.</span>
+ *
+ * <img src="./img/defaultIfEmpty.png" width="100%">
+ *
+ * `defaultIfEmpty` emits the values emitted by the source Observable or a
+ * specified default value if the source Observable is empty (completes without
+ * having emitted any `next` value).
+ *
+ * @example <caption>If no clicks happen in 5 seconds, then emit "no clicks"</caption>
+ * var clicks = Rx.Observable.fromEvent(document, 'click');
+ * var clicksBeforeFive = clicks.takeUntil(Rx.Observable.interval(5000));
+ * var result = clicksBeforeFive.defaultIfEmpty('no clicks');
+ * result.subscribe(x => console.log(x));
+ *
+ * @see {@link empty}
+ * @see {@link last}
+ *
+ * @param {any} [defaultValue=null] The default value used if the source
+ * Observable is empty.
+ * @return {Observable} An Observable that emits either the specified
+ * `defaultValue` if the source Observable emits no items, or the values emitted
+ * by the source Observable.
  * @method defaultIfEmpty
  * @owner Observable
  */
@@ -2470,11 +2791,47 @@ module '~rxjs/Observable' {
 declare module '~rxjs/operator/delayWhen' {
 import { Observable } from '~rxjs/Observable';
 /**
- * Returns an Observable that delays the emission of items from the source Observable
- * by a subscription delay and a delay selector function for each element.
- * @param {Function} selector function to retrieve a sequence indicating the delay for each given element.
- * @param {Observable} sequence indicating the delay for the subscription to the source.
- * @return {Observable} an Observable that delays the emissions of the source Observable by the specified timeout or Date.
+ * Delays the emission of items from the source Observable by a given time span
+ * determined by the emissions of another Observable.
+ *
+ * <span class="informal">It's like {@link delay}, but the time span of the
+ * delay duration is determined by a second Observable.</span>
+ *
+ * <img src="./img/delayWhen.png" width="100%">
+ *
+ * `delayWhen` time shifts each emitted value from the source Observable by a
+ * time span determined by another Observable. When the source emits a value,
+ * the `delayDurationSelector` function is called with the source value as
+ * argument, and should return an Observable, called the "duration" Observable.
+ * The source value is emitted on the output Observable only when the duration
+ * Observable emits a value or completes.
+ *
+ * Optionally, `delayWhen` takes a second argument, `subscriptionDelay`, which
+ * is an Observable. When `subscriptionDelay` emits its first value or
+ * completes, the source Observable is subscribed to and starts behaving like
+ * described in the previous paragraph. If `subscriptionDelay` is not provided,
+ * `delayWhen` will subscribe to the source Observable as soon as the output
+ * Observable is subscribed.
+ *
+ * @example <caption>Delay each click by a random amount of time, between 0 and 5 seconds</caption>
+ * var clicks = Rx.Observable.fromEvent(document, 'click');
+ * var delayedClicks = clicks.delayWhen(event =>
+ *   Rx.Observable.interval(Math.random() * 5000)
+ * );
+ * delayedClicks.subscribe(x => console.log(x));
+ *
+ * @see {@link debounce}
+ * @see {@link delay}
+ *
+ * @param {function(value: T): Observable} delayDurationSelector A function that
+ * returns an Observable for each value emitted by the source Observable, which
+ * is then used to delay the emission of that item on the output Observable
+ * until the Observable returned from this function emits a value.
+ * @param {Observable} subscriptionDelay An Observable that triggers the
+ * subscription to the source Observable once it emits any value.
+ * @return {Observable} An Observable that delays the emissions of the source
+ * Observable by an amount of time specified by the Observable returned by
+ * `delayDurationSelector`.
  * @method delayWhen
  * @owner Observable
  */
@@ -2951,8 +3308,42 @@ module '~rxjs/Observable' {
 declare module '~rxjs/operator/audit' {
 import { Observable, SubscribableOrPromise } from '~rxjs/Observable';
 /**
- * @param durationSelector
- * @return {Observable<R>|WebSocketSubject<T>|Observable<T>}
+ * Ignores source values for a duration determined by another Observable, then
+ * emits the most recent value from the source Observable, then repeats this
+ * process.
+ *
+ * <span class="informal">It's like {@link auditTime}, but the silencing
+ * duration is determined by a second Observable.</span>
+ *
+ * <img src="./img/audit.png" width="100%">
+ *
+ * `audit` is similar to `throttle`, but emits the last value from the silenced
+ * time window, instead of the first value. `audit` emits the most recent value
+ * from the source Observable on the output Observable as soon as its internal
+ * timer becomes disabled, and ignores source values while the timer is enabled.
+ * Initially, the timer is disabled. As soon as the first source value arrives,
+ * the timer is enabled by calling the `durationSelector` function with the
+ * source value, which returns the "duration" Observable. When the duration
+ * Observable emits a value or completes, the timer is disabled, then the most
+ * recent source value is emitted on the output Observable, and this process
+ * repeats for the next source value.
+ *
+ * @example <caption>Emit clicks at a rate of at most one click per second</caption>
+ * var clicks = Rx.Observable.fromEvent(document, 'click');
+ * var result = clicks.audit(ev => Rx.Observable.interval(1000));
+ * result.subscribe(x => console.log(x));
+ *
+ * @see {@link auditTime}
+ * @see {@link debounce}
+ * @see {@link delayWhen}
+ * @see {@link sample}
+ * @see {@link throttle}
+ *
+ * @param {function(value: T): Observable|Promise} durationSelector A function
+ * that receives a value from the source Observable, for computing the silencing
+ * duration, returned as an Observable or a Promise.
+ * @return {Observable<T>} An Observable that performs rate-limiting of
+ * emissions from the source Observable.
  * @method audit
  * @owner Observable
  */
@@ -2982,15 +3373,50 @@ declare module '~rxjs/operator/auditTime' {
 import { Scheduler } from '~rxjs/Scheduler';
 import { Observable } from '~rxjs/Observable';
 /**
- * @param delay
- * @param scheduler
- * @return {Observable<R>|WebSocketSubject<T>|Observable<T>}
+ * Ignores source values for `duration` milliseconds, then emits the most recent
+ * value from the source Observable, then repeats this process.
+ *
+ * <span class="informal">When it sees a source values, it ignores that plus
+ * the next ones for `duration` milliseconds, and then it emits the most recent
+ * value from the source.</span>
+ *
+ * <img src="./img/auditTime.png" width="100%">
+ *
+ * `auditTime` is similar to `throttleTime`, but emits the last value from the
+ * silenced time window, instead of the first value. `auditTime` emits the most
+ * recent value from the source Observable on the output Observable as soon as
+ * its internal timer becomes disabled, and ignores source values while the
+ * timer is enabled. Initially, the timer is disabled. As soon as the first
+ * source value arrives, the timer is enabled. After `duration` milliseconds (or
+ * the time unit determined internally by the optional `scheduler`) has passed,
+ * the timer is disabled, then the most recent source value is emitted on the
+ * output Observable, and this process repeats for the next source value.
+ * Optionally takes a {@link Scheduler} for managing timers.
+ *
+ * @example <caption>Emit clicks at a rate of at most one click per second</caption>
+ * var clicks = Rx.Observable.fromEvent(document, 'click');
+ * var result = clicks.auditTime(1000);
+ * result.subscribe(x => console.log(x));
+ *
+ * @see {@link audit}
+ * @see {@link debounceTime}
+ * @see {@link delay}
+ * @see {@link sampleTime}
+ * @see {@link throttleTime}
+ *
+ * @param {number} duration Time to wait before emitting the most recent source
+ * value, measured in milliseconds or the time unit determined internally
+ * by the optional `scheduler`.
+ * @param {Scheduler} [scheduler=async] The {@link Scheduler} to use for
+ * managing the timers that handle the rate-limiting behavior.
+ * @return {Observable<T>} An Observable that performs rate-limiting of
+ * emissions from the source Observable.
  * @method auditTime
  * @owner Observable
  */
-export function auditTime<T>(delay: number, scheduler?: Scheduler): Observable<T>;
+export function auditTime<T>(duration: number, scheduler?: Scheduler): Observable<T>;
 export interface AuditTimeSignature<T> {
-    (delay: number, scheduler?: Scheduler): Observable<T>;
+    (duration: number, scheduler?: Scheduler): Observable<T>;
 }
 }
 declare module 'rxjs/operator/auditTime' {
@@ -3774,9 +4200,43 @@ module '~rxjs/Observable' {
 declare module '~rxjs/operator/partition' {
 import { Observable } from '~rxjs/Observable';
 /**
- * @param predicate
- * @param thisArg
- * @return {Observable<T>[]}
+ * Splits the source Observable into two, one with values that satisfy a
+ * predicate, and another with values that don't satisfy the predicate.
+ *
+ * <span class="informal">It's like {@link filter}, but returns two Observables:
+ * one like the output of {@link filter}, and the other with values that did not
+ * pass the condition.</span>
+ *
+ * <img src="./img/partition.png" width="100%">
+ *
+ * `partition` outputs an array with two Observables that partition the values
+ * from the source Observable through the given `predicate` function. The first
+ * Observable in that array emits source values for which the predicate argument
+ * returns true. The second Observable emits source values for which the
+ * predicate returns false. The first behaves like {@link filter} and the second
+ * behaves like {@link filter} with the predicate negated.
+ *
+ * @example <caption>Partition click events into those on DIV elements and those elsewhere</caption>
+ * var clicks = Rx.Observable.fromEvent(document, 'click');
+ * var parts = clicks.partition(ev => ev.target.tagName === 'DIV');
+ * var clicksOnDivs = parts[0];
+ * var clicksElsewhere = parts[1];
+ * clicksOnDivs.subscribe(x => console.log('DIV clicked: ', x));
+ * clicksElsewhere.subscribe(x => console.log('Other clicked: ', x));
+ *
+ * @see {@link filter}
+ *
+ * @param {function(value: T, index: number): boolean} predicate A function that
+ * evaluates each value emitted by the source Observable. If it returns `true`,
+ * the value is emitted on the first Observable in the returned array, if
+ * `false` the value is emitted on the second Observable in the array. The
+ * `index` parameter is the number `i` for the i-th source emission that has
+ * happened since the subscription, starting from the number `0`.
+ * @param {any} [thisArg] An optional argument to determine the value of `this`
+ * in the `predicate` function.
+ * @return {[Observable<T>, Observable<T>]} An array with two Observables: one
+ * with values that passed the predicate, and another with values that did not
+ * pass the predicate.
  * @method partition
  * @owner Observable
  */
@@ -4177,15 +4637,36 @@ module '~rxjs/Observable' {
 declare module '~rxjs/operator/sample' {
 import { Observable } from '~rxjs/Observable';
 /**
- * Returns an Observable that, when the specified sampler Observable emits an item or completes, it then emits the most
- * recently emitted item (if any) emitted by the source Observable since the previous emission from the sampler
- * Observable.
+ * Emits the most recently emitted value from the source Observable whenever
+ * another Observable, the `notifier`, emits.
+ *
+ * <span class="informal">It's like {@link sampleTime}, but samples whenever
+ * the `notifier` Observable emits something.</span>
  *
  * <img src="./img/sample.png" width="100%">
  *
- * @param {Observable} sampler - the Observable to use for sampling the source Observable.
- * @return {Observable<T>} an Observable that emits the results of sampling the items emitted by this Observable
- * whenever the sampler Observable emits an item or completes.
+ * Whenever the `notifier` Observable emits a value or completes, `sample`
+ * looks at the source Observable and emits whichever value it has most recently
+ * emitted since the previous sampling, unless the source has not emitted
+ * anything since the previous sampling. The `notifier` is subscribed to as soon
+ * as the output Observable is subscribed.
+ *
+ * @example <caption>On every click, sample the most recent "seconds" timer</caption>
+ * var seconds = Rx.Observable.interval(1000);
+ * var clicks = Rx.Observable.fromEvent(document, 'click');
+ * var result = seconds.sample(clicks);
+ * result.subscribe(x => console.log(x));
+ *
+ * @see {@link audit}
+ * @see {@link debounce}
+ * @see {@link sampleTime}
+ * @see {@link throttle}
+ *
+ * @param {Observable<any>} notifier The Observable to use for sampling the
+ * source Observable.
+ * @return {Observable<T>} An Observable that emits the results of sampling the
+ * values emitted by the source Observable whenever the notifier Observable
+ * emits value or completes.
  * @method sample
  * @owner Observable
  */
@@ -4215,15 +4696,44 @@ declare module '~rxjs/operator/sampleTime' {
 import { Observable } from '~rxjs/Observable';
 import { Scheduler } from '~rxjs/Scheduler';
 /**
- * @param delay
- * @param scheduler
- * @return {Observable<R>|WebSocketSubject<T>|Observable<T>}
+ * Emits the most recently emitted value from the source Observable within
+ * periodic time intervals.
+ *
+ * <span class="informal">Samples the source Observable at periodic time
+ * intervals, emitting what it samples.</span>
+ *
+ * <img src="./img/sampleTime.png" width="100%">
+ *
+ * `sampleTime` periodically looks at the source Observable and emits whichever
+ * value it has most recently emitted since the previous sampling, unless the
+ * source has not emitted anything since the previous sampling. The sampling
+ * happens periodically in time every `period` milliseconds (or the time unit
+ * defined by the optional `scheduler` argument). The sampling starts as soon as
+ * the output Observable is subscribed.
+ *
+ * @example <caption>Every second, emit the most recent click at most once</caption>
+ * var clicks = Rx.Observable.fromEvent(document, 'click');
+ * var result = clicks.sampleTime(1000);
+ * result.subscribe(x => console.log(x));
+ *
+ * @see {@link auditTime}
+ * @see {@link debounceTime}
+ * @see {@link delay}
+ * @see {@link sample}
+ * @see {@link throttleTime}
+ *
+ * @param {number} period The sampling period expressed in milliseconds or the
+ * time unit determined internally by the optional `scheduler`.
+ * @param {Scheduler} [scheduler=async] The {@link Scheduler} to use for
+ * managing the timers that handle the sampling.
+ * @return {Observable<T>} An Observable that emits the results of sampling the
+ * values emitted by the source Observable at the specified time interval.
  * @method sampleTime
  * @owner Observable
  */
-export function sampleTime<T>(delay: number, scheduler?: Scheduler): Observable<T>;
+export function sampleTime<T>(period: number, scheduler?: Scheduler): Observable<T>;
 export interface SampleTimeSignature<T> {
-    (delay: number, scheduler?: Scheduler): Observable<T>;
+    (period: number, scheduler?: Scheduler): Observable<T>;
 }
 }
 declare module 'rxjs/operator/sampleTime' {
@@ -4275,16 +4785,16 @@ import { Observable } from '~rxjs/Observable';
  * @see {@link mergeScan}
  * @see {@link reduce}
  *
- * @param {function(acc: R, value: T): R} accumulator The accumulator function
- * called on each source value.
+ * @param {function(acc: R, value: T, index: number): R} accumulator
+ * The accumulator function called on each source value.
  * @param {T|R} [seed] The initial accumulation value.
  * @return {Observable<R>} An observable of the accumulated values.
  * @method scan
  * @owner Observable
  */
-export function scan<T, R>(accumulator: (acc: R, value: T) => R, seed?: T | R): Observable<R>;
+export function scan<T, R>(accumulator: (acc: R, value: T, index: number) => R, seed?: T | R): Observable<R>;
 export interface ScanSignature<T> {
-    <R>(accumulator: (acc: R, value: T) => R, seed?: T | R): Observable<R>;
+    <R>(accumulator: (acc: R, value: T, index: number) => R, seed?: T | R): Observable<R>;
 }
 }
 declare module 'rxjs/operator/scan' {
@@ -4775,16 +5285,41 @@ module '~rxjs/Observable' {
 declare module '~rxjs/operator/take' {
 import { Observable } from '~rxjs/Observable';
 /**
+ * Emits only the first `count` values emitted by the source Observable.
+ *
+ * <span class="informal">Takes the first `count` values from the source, then
+ * completes.</span>
+ *
+ * <img src="./img/take.png" width="100%">
+ *
+ * `take` returns an Observable that emits only the first `count` values emitted
+ * by the source Observable. If the source emits fewer than `count` values then
+ * all of its values are emitted. After that, it completes, regardless if the
+ * source completes.
+ *
+ * @example <caption>Take the first 5 seconds of an infinite 1-second interval Observable</caption>
+ * var interval = Rx.Observable.interval(1000);
+ * var five = interval.take(5);
+ * five.subscribe(x => console.log(x));
+ *
+ * @see {@link takeLast}
+ * @see {@link takeUntil}
+ * @see {@link takeWhile}
+ * @see {@link skip}
+ *
  * @throws {ArgumentOutOfRangeError} When using `take(i)`, it delivers an
  * ArgumentOutOrRangeError to the Observer's `error` callback if `i < 0`.
- * @param total
- * @return {any}
+ *
+ * @param {number} count The maximum number of `next` values to emit.
+ * @return {Observable<T>} An Observable that emits only the first `count`
+ * values emitted by the source Observable, or all of the values from the source
+ * if the source emits fewer than `count` values.
  * @method take
  * @owner Observable
  */
-export function take<T>(total: number): Observable<T>;
+export function take<T>(count: number): Observable<T>;
 export interface TakeSignature<T> {
-    (total: number): Observable<T>;
+    (count: number): Observable<T>;
 }
 }
 declare module 'rxjs/operator/take' {
@@ -4807,16 +5342,44 @@ module '~rxjs/Observable' {
 declare module '~rxjs/operator/takeLast' {
 import { Observable } from '~rxjs/Observable';
 /**
+ * Emits only the last `count` values emitted by the source Observable.
+ *
+ * <span class="informal">Remembers the latest `count` values, then emits those
+ * only when the source completes.</span>
+ *
+ * <img src="./img/takeLast.png" width="100%">
+ *
+ * `takeLast` returns an Observable that emits at most the last `count` values
+ * emitted by the source Observable. If the source emits fewer than `count`
+ * values then all of its values are emitted. This operator must wait until the
+ * `complete` notification emission from the source in order to emit the `next`
+ * values on the output Observable, because otherwise it is impossible to know
+ * whether or not more values will be emitted on the source. For this reason,
+ * all values are emitted synchronously, followed by the complete notification.
+ *
+ * @example <caption>Take the last 3 values of an Observable with many values</caption>
+ * var many = Rx.Observable.range(1, 100);
+ * var lastThree = many.takeLast(3);
+ * lastThree.subscribe(x => console.log(x));
+ *
+ * @see {@link take}
+ * @see {@link takeUntil}
+ * @see {@link takeWhile}
+ * @see {@link skip}
+ *
  * @throws {ArgumentOutOfRangeError} When using `takeLast(i)`, it delivers an
  * ArgumentOutOrRangeError to the Observer's `error` callback if `i < 0`.
- * @param total
- * @return {any}
+ *
+ * @param {number} count The maximum number of values to emit from the end of
+ * the sequence of values emitted by the source Observable.
+ * @return {Observable<T>} An Observable that emits at most the last count
+ * values emitted by the source Observable.
  * @method takeLast
  * @owner Observable
  */
-export function takeLast<T>(total: number): Observable<T>;
+export function takeLast<T>(count: number): Observable<T>;
 export interface TakeLastSignature<T> {
-    (total: number): Observable<T>;
+    (count: number): Observable<T>;
 }
 }
 declare module 'rxjs/operator/takeLast' {
@@ -4839,8 +5402,35 @@ module '~rxjs/Observable' {
 declare module '~rxjs/operator/takeUntil' {
 import { Observable } from '~rxjs/Observable';
 /**
- * @param notifier
- * @return {Observable<R>|WebSocketSubject<T>|Observable<T>}
+ * Emits the values emitted by the source Observable until a `notifier`
+ * Observable emits a value.
+ *
+ * <span class="informal">Lets values pass until a second Observable,
+ * `notifier`, emits something. Then, it completes.</span>
+ *
+ * <img src="./img/takeUntil.png" width="100%">
+ *
+ * `takeUntil` subscribes and begins mirroring the source Observable. It also
+ * monitors a second Observable, `notifier` that you provide. If the `notifier`
+ * emits a value or a complete notification, the output Observable stops
+ * mirroring the source Observable and completes.
+ *
+ * @example <caption>Tick every second until the first click happens</caption>
+ * var interval = Rx.Observable.interval(1000);
+ * var clicks = Rx.Observable.fromEvent(document, 'click');
+ * var result = interval.takeUntil(clicks);
+ * result.subscribe(x => console.log(x));
+ *
+ * @see {@link take}
+ * @see {@link takeLast}
+ * @see {@link takeWhile}
+ * @see {@link skip}
+ *
+ * @param {Observable} notifier The Observable whose first emitted value will
+ * cause the output Observable of `takeUntil` to stop emitting values from the
+ * source Observable.
+ * @return {Observable<T>} An Observable that emits the values from the source
+ * Observable until such time as `notifier` emits its first value.
  * @method takeUntil
  * @owner Observable
  */
@@ -4869,8 +5459,38 @@ module '~rxjs/Observable' {
 declare module '~rxjs/operator/takeWhile' {
 import { Observable } from '~rxjs/Observable';
 /**
- * @param predicate
- * @return {Observable<R>|WebSocketSubject<T>|Observable<T>}
+ * Emits values emitted by the source Observable so long as each value satisfies
+ * the given `predicate`, and then completes as soon as this `predicate` is not
+ * satisfied.
+ *
+ * <span class="informal">Takes values from the source only while they pass the
+ * condition given. When the first value does not satisfy, it completes.</span>
+ *
+ * <img src="./img/takeWhile.png" width="100%">
+ *
+ * `takeWhile` subscribes and begins mirroring the source Observable. Each value
+ * emitted on the source is given to the `predicate` function which returns a
+ * boolean, representing a condition to be satisfied by the source values. The
+ * output Observable emits the source values until such time as the `predicate`
+ * returns false, at which point `takeWhile` stops mirroring the source
+ * Observable and completes the output Observable.
+ *
+ * @example <caption>Emit click events only while the clientX property is greater than 200</caption>
+ * var clicks = Rx.Observable.fromEvent(document, 'click');
+ * var result = clicks.takeWhile(ev => ev.clientX > 200);
+ * result.subscribe(x => console.log(x));
+ *
+ * @see {@link take}
+ * @see {@link takeLast}
+ * @see {@link takeUntil}
+ * @see {@link skip}
+ *
+ * @param {function(value: T, index: number): boolean} predicate A function that
+ * evaluates a value emitted by the source Observable and returns a boolean.
+ * Also takes the (zero-based) index as the second argument.
+ * @return {Observable<T>} An Observable that emits the values from the source
+ * Observable so long as each value satisfies the condition defined by the
+ * `predicate`, then completes.
  * @method takeWhile
  * @owner Observable
  */
@@ -4899,8 +5519,40 @@ module '~rxjs/Observable' {
 declare module '~rxjs/operator/throttle' {
 import { Observable, SubscribableOrPromise } from '~rxjs/Observable';
 /**
- * @param durationSelector
- * @return {Observable<R>|WebSocketSubject<T>|Observable<T>}
+ * Emits a value from the source Observable, then ignores subsequent source
+ * values for a duration determined by another Observable, then repeats this
+ * process.
+ *
+ * <span class="informal">It's like {@link throttleTime}, but the silencing
+ * duration is determined by a second Observable.</span>
+ *
+ * <img src="./img/throttle.png" width="100%">
+ *
+ * `throttle` emits the source Observable values on the output Observable
+ * when its internal timer is disabled, and ignores source values when the timer
+ * is enabled. Initially, the timer is disabled. As soon as the first source
+ * value arrives, it is forwarded to the output Observable, and then the timer
+ * is enabled by calling the `durationSelector` function with the source value,
+ * which returns the "duration" Observable. When the duration Observable emits a
+ * value or completes, the timer is disabled, and this process repeats for the
+ * next source value.
+ *
+ * @example <caption>Emit clicks at a rate of at most one click per second</caption>
+ * var clicks = Rx.Observable.fromEvent(document, 'click');
+ * var result = clicks.throttle(ev => Rx.Observable.interval(1000));
+ * result.subscribe(x => console.log(x));
+ *
+ * @see {@link audit}
+ * @see {@link debounce}
+ * @see {@link delayWhen}
+ * @see {@link sample}
+ * @see {@link throttleTime}
+ *
+ * @param {function(value: T): Observable|Promise} durationSelector A function
+ * that receives a value from the source Observable, for computing the silencing
+ * duration for each source value, returned as an Observable or a Promise.
+ * @return {Observable<T>} An Observable that performs the throttle operation to
+ * limit the rate of emissions from the source.
  * @method throttle
  * @owner Observable
  */
@@ -4930,15 +5582,47 @@ declare module '~rxjs/operator/throttleTime' {
 import { Scheduler } from '~rxjs/Scheduler';
 import { Observable } from '~rxjs/Observable';
 /**
- * @param delay
- * @param scheduler
- * @return {Observable<R>|WebSocketSubject<T>|Observable<T>}
+ * Emits a value from the source Observable, then ignores subsequent source
+ * values for `duration` milliseconds, then repeats this process.
+ *
+ * <span class="informal">Lets a value pass, then ignores source values for the
+ * next `duration` milliseconds.</span>
+ *
+ * <img src="./img/throttleTime.png" width="100%">
+ *
+ * `throttleTime` emits the source Observable values on the output Observable
+ * when its internal timer is disabled, and ignores source values when the timer
+ * is enabled. Initially, the timer is disabled. As soon as the first source
+ * value arrives, it is forwarded to the output Observable, and then the timer
+ * is enabled. After `duration` milliseconds (or the time unit determined
+ * internally by the optional `scheduler`) has passed, the timer is disabled,
+ * and this process repeats for the next source value. Optionally takes a
+ * {@link Scheduler} for managing timers.
+ *
+ * @example <caption>Emit clicks at a rate of at most one click per second</caption>
+ * var clicks = Rx.Observable.fromEvent(document, 'click');
+ * var result = clicks.throttleTime(1000);
+ * result.subscribe(x => console.log(x));
+ *
+ * @see {@link auditTime}
+ * @see {@link debounceTime}
+ * @see {@link delay}
+ * @see {@link sampleTime}
+ * @see {@link throttle}
+ *
+ * @param {number} duration Time to wait before emitting another value after
+ * emitting the last value, measured in milliseconds or the time unit determined
+ * internally by the optional `scheduler`.
+ * @param {Scheduler} [scheduler=async] The {@link Scheduler} to use for
+ * managing the timers that handle the sampling.
+ * @return {Observable<T>} An Observable that performs the throttle operation to
+ * limit the rate of emissions from the source.
  * @method throttleTime
  * @owner Observable
  */
-export function throttleTime<T>(delay: number, scheduler?: Scheduler): Observable<T>;
+export function throttleTime<T>(duration: number, scheduler?: Scheduler): Observable<T>;
 export interface ThrottleTimeSignature<T> {
-    (dueTime: number, scheduler?: Scheduler): Observable<T>;
+    (duration: number, scheduler?: Scheduler): Observable<T>;
 }
 }
 declare module 'rxjs/operator/throttleTime' {
@@ -6216,6 +6900,7 @@ import '~rxjs/add/observable/from';
 import '~rxjs/add/observable/fromEvent';
 import '~rxjs/add/observable/fromEventPattern';
 import '~rxjs/add/observable/fromPromise';
+import '~rxjs/add/observable/generate';
 import '~rxjs/add/observable/interval';
 import '~rxjs/add/observable/merge';
 import '~rxjs/add/observable/race';

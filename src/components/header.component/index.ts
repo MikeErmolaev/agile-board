@@ -1,6 +1,7 @@
-import { Component } from 'angular2/core';
+import { Component, Input } from 'angular2/core';
 import { Router } from 'angular2/router';
 import { AuthService } from '../../services/auth.service';
+import { User } from '../../entities/user';
 
 @Component({
 	selector: 'header-container',
@@ -8,7 +9,9 @@ import { AuthService } from '../../services/auth.service';
 	styles: [require('./style/header.component.styl')]
 })
 export class HeaderComponent {
-	constructor(private authService: AuthService, private router:Router) {}
+	@Input() currentUser: User;
+
+	constructor(private authService: AuthService, private router:Router) { }
 
 	logOut() {
 		this.authService.logOut();

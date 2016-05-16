@@ -2,9 +2,11 @@
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const Schema = mongoose.Schema;
 const SALT_WORK_FACTOR = 10;
+const _ = require('lodash');
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new Schema({
 	email: {
 		type: String,
 		unique: true,
@@ -19,14 +21,33 @@ const UserSchema = new mongoose.Schema({
 	name: {
 		type: String,
 		required: true
-	}
+	},
 
+	boards: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Board'
+	}]
+
+});
+
+UserSchema.set('toObject', { 
+	transform: (doc, ret) => {
+		ret.id = ret._id;
+		delete ret._id;
+		delete ret.password;
+		delete ret.__v;
+		_.forEach(ret.boards, board => {
+			if (_.isPlainObject(board)) {
+				board.id = board._id;
+				delete board._id;
+				delete board.__v;
+			}
+		})
+	}
 });
 
 UserSchema.pre('save', function(next) {
 	var user = this;
-
-	console.log(user);
 
 	if (!user.isModified('password')) {
 		return next();
@@ -46,7 +67,6 @@ UserSchema.pre('save', function(next) {
 			next();
 		});
 	});
-
 });
 
 UserSchema.methods.comparePassword = function(candidatePassword, cb) {

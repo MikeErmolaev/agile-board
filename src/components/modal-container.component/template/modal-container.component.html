@@ -1,0 +1,3 @@
+<modal *ngFor="let modal of modalStack" (onShouldBeRemoved)="onShouldBeRemoved()"></modal>
+<div *ngIf="modalStack.length>0" class="cover" (click)="closeModal($event)">
+</div>

@@ -46,6 +46,11 @@ app.all('/favicon.ico', (req, res) => {
 
 app.use(routes);
 
+app.get('*', (req, res) => {
+	console.log('SEND INDEX');
+	res.sendFile(path.resolve(__dirname, '..', 'dist', 'client') + '\\index.html');
+})
+
 if (process.env.NODE_ENV === 'development') {
 	app.use(errorHandler());
 }

@@ -9,17 +9,14 @@ import { AuthService } from '../../../../services/auth.service';
 	directives: [RouterLink]
 })
 export class LoginComponent { 
-	userEmail: string;
-	userPassword: string;
-
 	constructor(private router: Router, private authService: AuthService) { }
 
-	onSubmit() {
-		this.logIn();
+	onSubmit(credentials) {
+		this.logIn(credentials);
 	}
 
-	logIn() {
-		this.authService.logIn(this.userEmail, this.userPassword)
+	logIn(credentials) {
+		this.authService.logIn(credentials.email, credentials.password)
 						.subscribe(
 							isAuthorized => {
 								this.router.navigate(['/Home']);

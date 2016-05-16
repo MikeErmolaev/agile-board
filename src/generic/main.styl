@@ -5,6 +5,9 @@ global-reset()
 $footerHeight = 64px
 $headerHeight = 30px
 
+*
+	box-sizing border-box
+
 body
 	font 18px Helvetica, Arial, sans-serif
 	min-height 100%
@@ -42,11 +45,20 @@ h2
 	font-weight 400
 	font-size 24px
 	
+button
+	cursor pointer
+	background none
+	border none
+	&:focus
+		outline none
+		
+input
+	outline none
+	
 header
 	absolute top
 	width 100%
-	height $headerHeight
-	
+	height $headerHeight      
 	
 .wavy-border
 	position absolute

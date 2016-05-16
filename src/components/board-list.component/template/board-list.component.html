@@ -1,0 +1,10 @@
+<div class="boards-container">
+	<label class="title">My boards:</label>
+	<ul class="board-list">
+		<li class="board" *ngFor="let board of currentUser.boards">	
+			<p class="board-title">{{board.title}}</p>
+			<p class="cross" (click)="deleteBoard(board.id)">˟</p>
+		</li>
+		<li (click)="createNewBoard()" class="ghost board">Create new board</li>
+	</ul>
+</div>

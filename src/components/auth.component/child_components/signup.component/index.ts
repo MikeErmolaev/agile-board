@@ -9,18 +9,14 @@ import { AuthService } from '../../../../services/auth.service';
 	directives: [RouterLink]
 })
 export class SignupComponent {
-	userName: string;
-	userEmail: string;
-	userPassword: string;
-
 	constructor(private router: Router, private authService: AuthService) { }
 
-	onSubmit() {
-		this.signUp();
+	onSubmit(userInfo) {
+		this.signUp(userInfo);
 	}
 
-	signUp() {
-		this.authService.signUp(this.userName, this.userEmail, this.userPassword)
+	signUp(userInfo) {
+		this.authService.signUp(userInfo.name, userInfo.email, userInfo.password)
 						.subscribe(
 							isAuthorized => {
 								if (isAuthorized) {

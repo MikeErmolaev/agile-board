@@ -14,4 +14,8 @@ export class StorageService {
 	removeAuthToken() {
 		localStorage.removeItem(TOKEN_KEY);
 	}
+
+	hasAuthToken() {
+		return !!localStorage.getItem(TOKEN_KEY);
+	}
 }

@@ -35,7 +35,7 @@ const commonConfig = {
 			exclude: /\/node_modules\//,
 			loader: ExtractTextPlugin.extract('style', 'css!stylus?resolve url')
 		}, {
-			test: /\.component\.styl$/,
+			test: /\.(component|modal)\.styl$/,
 			loader: 'raw!stylus?resolve url'
 		}, {
 			test: /\.css$/,

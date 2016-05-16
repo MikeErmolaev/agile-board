@@ -1,0 +1,60 @@
+.boards-container
+	display inline-block
+	vertical-align middle
+	width 90%
+	text-align center
+	margin 0 auto
+	&:before
+		content ''
+		height 100%
+		display inline-block
+		vertical-align middle
+		margin-right -0.25em
+		
+	
+.board-list
+	font-size 0
+	
+.title
+	font-size 15px
+	
+.board
+	font-size 15px
+	min-width 150px
+	max-width 250px
+	width 25%
+	display inline-block
+	height 80px
+	background-color: #68b3e8
+	margin 10px
+	text-align left
+	padding 10px
+	color #fff
+	font-weight 700
+	transition .15s ease-in-out
+	border-radius 10px
+	cursor pointer
+	vertical-align middle
+	&:hover
+		.cross
+			opacity 1
+			width 10px
+		background-color #3885BC
+		
+.board-title
+	float left
+	clear()
+		
+.cross
+	transition .15s ease-in-out
+	opacity 0
+	font-size 20px
+	width 0px
+	font-weight bold
+	float right
+	clear()
+
+.ghost
+	background-color #ccc
+	&:hover
+		background-color #A7A7A7

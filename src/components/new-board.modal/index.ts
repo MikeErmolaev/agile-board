@@ -21,6 +21,7 @@ export class NewBoardModal {
 	createBoard(title: string, team?: string) {
 		if (!title) {
 			this.renderer.invokeElementMethod(this.titleInputElementRef.nativeElement, 'focus', []);
+			return;
 		}
 
 		this.userService.addUserBoard(title, team).subscribe(result => {

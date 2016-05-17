@@ -6,6 +6,7 @@ import { RequestService } from './request.service';
 import { extractData } from '../utils/http.utils';
 import { config } from '../conf';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import * as _ from 'lodash';
 
 const { serverUrl } = config;
 
@@ -42,22 +43,21 @@ export class UserService {
 
 		return this.http.post(`${serverUrl}/api/protected/board/add`, body, { headers: this.requestService.getAuthHeaders() })
 						.map(extractData)
-						.map(data => {
-							if (data.success) {
-								this.setCurrentUser(data.user);
-							}
-
-							return data.success;
-						});
+						.map(this.updateUser);
 
 	}
 
-	setUserBoards(boards) {
-		const user = this.currentUserSubject.getValue();
-
-		user.setBoards(boards);
-
-		this.currentUserSubject.next(user);
+	deleteUserBoard(boardId) {
+		return this.http.delete(`${serverUrl}/api/protected/board/delete/${boardId}`, { headers: this.requestService.getAuthHeaders() })
+				.map(extractData)
+				.map(this.updateUser);
 	}
 
+	private updateUser(data) {
+		if (data.success) {
+			this.setCurrentUser(data.user);
+		}
+
+		return data.success;
+	}
 };

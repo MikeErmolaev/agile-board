@@ -1,12 +1,13 @@
 import { Component, Input } from 'angular2/core';
-import { Router } from 'angular2/router';
+import { Router, RouterLink } from 'angular2/router';
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../entities/user';
 
 @Component({
 	selector: 'header-container',
 	template: require('./template/header.component.html'),
-	styles: [require('./style/header.component.styl')]
+	styles: [require('./style/header.component.styl')],
+	directives: [RouterLink]
 })
 export class HeaderComponent {
 	@Input() currentUser: User;

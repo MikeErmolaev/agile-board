@@ -39,11 +39,11 @@
 		.cross
 			opacity 1
 			width 10px
-		background-color #3885BC
+		background-color shade(#68b3e8, 10%)
 		
 .board-title
 	float left
-	clear()
+	clearfix()
 		
 .cross
 	transition .15s ease-in-out
@@ -52,9 +52,9 @@
 	width 0px
 	font-weight bold
 	float right
-	clear()
+	clearfix()
 
 .ghost
 	background-color #ccc
 	&:hover
-		background-color #A7A7A7
+		background-color darken(#ccc, 10%)

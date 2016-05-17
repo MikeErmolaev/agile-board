@@ -16,7 +16,7 @@
 		<div [hidden]="password.valid || password.pristine" class="form-warning">Password is required</div>
 	</div>
 	
-	<button type="submit" [disabled]="!signupForm.form.valid">Create new account</button>
+	<button class='button-primary' type="submit" [disabled]="!signupForm.form.valid">Create new account</button>
 </form>
 <p>Already have an account? 
 	<a [routerLink]="['Login']">

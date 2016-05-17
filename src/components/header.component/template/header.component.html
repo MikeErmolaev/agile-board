@@ -1,5 +1,5 @@
 <header>
-	<h3>Agile-Board</h3>
-	<h2>{{ currentUser.name }}</h2>
-	<button (click)="logOut()">Log out</button>
+	<h3 class="title" [routerLink]="['/Home']">Agile-Board</h3>
+	<h3 class="user">Hello, {{ currentUser.name }}</h3>
+	<button class="button-warn" (click)="logOut()">Log out</button>
 </header>

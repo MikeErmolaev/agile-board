@@ -11,7 +11,7 @@
 		<div [hidden]="password.valid || password.pristine" class="form-warning">Password is required</div>
 	</div>
 	
-	<button type="submit" [disabled]="!loginForm.form.valid">Log in</button>
+	<button class="button-primary" type="submit" [disabled]="!loginForm.form.valid">Log in</button>
 </form>
 <p>Haven't account yet? 
 	<a [routerLink]="['Signup']">

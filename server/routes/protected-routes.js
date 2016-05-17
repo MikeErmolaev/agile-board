@@ -1,57 +1,26 @@
 'use strict';
 
 const router = require('express').Router();
-const validateToken = require('../middlewares/validate-token.js');
+const protectedMiddlewares = require('../middlewares/protected.middleware.js');
 const UserDao = require('../models/User');
 const BoardDao = require('../models/Board');
 
-router.use('/api/protected', validateToken);
+const apiPath = '/api/protected';
 
-router.get('/api/protected/authorize', (req, res, next) => {
-	UserDao.getUserById(req.decodedToken.sub).then(user => {
-		res.send({
-			data: {
-				success: true,
-				user
-			}
-		});
-	}).catch(next);
-});
+router.use(`${apiPath}`, protectedMiddlewares.validateToken);
 
-router.post('/api/protected/board/add', (req, res, next) => {
-	const { title, team } = req.body;
+router.get(`${apiPath}/authorize`, protectedMiddlewares.authorizeUser);
 
-	console.log(req.get('Content-Type'));
+router.post(`${apiPath}/board/add`, protectedMiddlewares.addBoard);
 
-	if (!title) {
-		return res.sendStatus(400);
-	}
+router.delete(`${apiPath}/board/delete/:boardId`, protectedMiddlewares.deleteBoard);
 
-	BoardDao.saveBoard(title, req.decodedToken.sub).then(user => {
-		res.send({
-			data: {
-				success: true,
-				user
-			}
-		})
-	}).catch(next);
-});
+router.get(`${apiPath}/board/:boardId`, protectedMiddlewares.getBoard);
 
-router.post('/api/protected/board/delete', (req, res, next) => {
-	const { boardId } = req.body;
+router.post(`${apiPath}/column/add`, protectedMiddlewares.addColumn);
 
-	if (!boardId) {
-		return res.sendStatus(400);
-	}
+router.delete(`${apiPath}/column/delete/:columnId`, protectedMiddlewares.deleteColumn);
 
-	BoardDao.deleteBoard(boardId, req.decodedToken.sub).then(user => {
-		res.send({
-			data: {
-				success: true,
-				user
-			}
-		});
-	}).catch(next);	
-});
+router.post(`${apiPath}/card/add`, protectedMiddlewares.addCard);
 
 module.exports = router;

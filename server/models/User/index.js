@@ -18,7 +18,7 @@ const UserDao = {
 			User.findOne({ email })
 				.populate({
 							path: 'boards',
-							populate: { path: 'creator users', select: 'name id email' }
+							select: 'id title creator'
 				})
 				.exec((err, user) => {
 					if (!err && !user) {
@@ -42,16 +42,19 @@ const UserDao = {
 	},
 
 	getUserById(id) {
-		return new Promise((resolve, reject) => {
-			User.findById(id)
-				.populate({
-							path: 'boards',
-							populate: { path: 'creator users', select: 'name id email' }
-				})
-				.then(user => {
-					resolve(user.toObject());
-				}, reject);
-		});
+		return User.findById(id)
+					.populate({
+						path: 'boards',
+						select: 'id title creator'
+					})
+					.exec()
+					.then(user => {
+						if (!user) {
+							return Promise.reject(401)
+						}
+
+						return user.toObject()
+					});
 	}
 };
 

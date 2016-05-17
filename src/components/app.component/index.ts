@@ -25,7 +25,7 @@ require('generic/main.styl');
 		component: AuthComponent
 	},
 	{
-		path: '/',
+		path: '/...',
 		name: 'Home',
 		component: HomeComponent,
 		useAsDefault: true

@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const Schema = mongoose.Schema;
 const SALT_WORK_FACTOR = 10;
-const _ = require('lodash');
+const ModelUtils = require('../../utils/model.utils');
 
 const UserSchema = new Schema({
 	email: {
@@ -32,17 +32,9 @@ const UserSchema = new Schema({
 
 UserSchema.set('toObject', { 
 	transform: (doc, ret) => {
-		ret.id = ret._id;
-		delete ret._id;
 		delete ret.password;
 		delete ret.__v;
-		_.forEach(ret.boards, board => {
-			if (_.isPlainObject(board)) {
-				board.id = board._id;
-				delete board._id;
-				delete board.__v;
-			}
-		})
+		ModelUtils.renameNestedIdField(ret);
 	}
 });
 

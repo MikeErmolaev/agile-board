@@ -1,0 +1,23 @@
+<div class="columns-container">
+	<ul class="columns-list">
+		<li class="inline column" *ngFor="let column of currentBoard.columns">
+			<div class="column-header">
+				<p class="column-title">{{ column.title }}</p>
+				<p class="cross" (click)="deleteColumn(column.id)">˟</p>
+			</div>
+			<ul class="card-list">
+				<li class="card" *ngFor="let card of column.cards">
+					<div class="card-header">
+						<p class="card-title">{{ card.title }}</p>
+						<p class="cross" (click)="deleteColumn(card.id)">˟</p>
+					</div>
+					<div class="checkbox"></div>
+				</li>
+			</ul>
+			<input class="card-input" #newCard (keyup.enter)="addCard(newCard.value, column.id)" type="text" placeholder="Add new card...">
+		</li>
+		<li class="inline">
+			<input #newColumn (keyup.enter)="addColumn(newColumn.value)" type="text" placeholder="Add new column...">
+		</li>
+	</ul>
+</div>

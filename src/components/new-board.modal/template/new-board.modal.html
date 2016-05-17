@@ -3,17 +3,18 @@
 	<div class="input-section">
 		<div class="input-block">
 			<label>Title</label>
-			<input class="control" type="text" placeholder="Enter name of new board" #title>
+			<input (keyup.enter)="createBoard(title.value, team && team.value)" autofocus class="control" type="text" placeholder="Enter name of new board" #title>
 		</div>
-		<div class="input-block">
+		<!-- <div class="input-block">
 			<label>Team</label>
 			<select class="control" type="text" placeholder="Enter name of new board" #team>
-				<option disabled>Choose team</option>
+				Choose team
+				<option disabled></option>
 			</select>
-		</div>
+		</div> -->
 	</div>
 	<div class="controls">
-		<button (click)="createBoard(title.value, team.value)">Add</button>
-		<button (click)="closeModal()">Close</button>
+		<button class="button-primary" (click)="createBoard(title.value, team && team.value)">Add</button>
+		<button class="button-warn" (click)="closeModal()">Close</button>
 	</div>
 </div>

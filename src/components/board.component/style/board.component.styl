@@ -1,0 +1,106 @@
+.columns-list
+	white-space no-wrap
+	overflow auto
+	font-size 0
+	text-align left
+	
+.title
+	font-size 15px
+	
+.inline
+	font-size 15px
+	width 200px
+	display inline-block
+	margin 10px
+	transition .15s ease-in-out
+	vertical-align top
+
+.column
+	background-color: lighten(#68b3e8, 15%)
+	text-align left
+	padding 10px
+	color #fff
+	font-weight 700
+	border-radius 10px
+	&:hover
+		background-color darken(#68b3e8, 10%)
+		.column-header .cross
+			opacity 1
+			transform translateX(-10px)
+		
+.column-title, .card-title
+	float left
+		
+.cross
+	cursor pointer
+	transition .15s ease-in-out
+	opacity 0
+	font-size 20px
+	margin-right -10px
+	width 10px
+	font-weight bold
+	float right
+	
+.column-header, .card-header
+	clearfix()
+	
+.card-input
+	display block
+	opacity 0.5
+	background-color #fff
+	width 100%
+	&:hover
+		opacity 0.7
+	&:focus
+		opacity 1
+		
+.card
+	padding 10px
+	position relative
+	margin 10px 0
+	background-color darken(#fff, 10%)
+	height 80px
+	border-bottom 1px solid #bbb
+	font-weight 100
+	color #444
+	transition .45s ease-in-out
+	.cross
+		color indianred
+		opacity 0.6
+		margin-right 0
+	&:hover
+		background-color #fff
+		.card-header .cross
+			opacity 1
+		.checkbox:after
+			border-color alpha(#42A948, 0.4)
+			
+.card-header
+	border-bottom 1px solid #ccc
+	height 30px
+	
+.checkbox
+	width 18px
+	height 18px
+	position absolute
+	margin-top 10px
+	border-radius 4px
+	border 1px solid #ccc
+	right 10px
+	cursor pointer
+	&:after
+		content ''
+		width 17px
+		height 5px
+		position absolute
+		top -1px
+		left 2px
+		border 3px solid #fff
+		border-top none
+		border-right none
+		background transparent
+		transform rotate(-45deg)
+		transition .45s ease
+	&:hover::after
+		border-color alpha(#42A948, 0.7) !important
+		

@@ -53,7 +53,7 @@ export class UserService {
 				.map(this.updateUser);
 	}
 
-	private updateUser(data) {
+	private updateUser = data => {
 		if (data.success) {
 			this.setCurrentUser(data.user);
 		}

@@ -108,8 +108,7 @@ export class AuthService {
 	}
 
 	private handleError(error: any) {
-		const errorMessage = error.message || 'Server error';
-		console.error(errorMessage);
+		const errorMessage = error.status === 401 && 'Wrong credentials' || error.message || 'Server error';
 		return Observable.throw(errorMessage);
 	} 
 };

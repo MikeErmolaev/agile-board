@@ -58,4 +58,36 @@ export class BoardComponent implements OnInit {
 			console.error
 		);
 	}
+
+	toggleCardState(cardId, oldState) {
+		const newState = !oldState
+
+		this.boardService.toggleCardState(cardId, newState).subscribe(
+			result => {
+				//TODO: activity report
+			},
+			console.error
+		);
+	}
+
+	deleteCard(cardId) {
+		this.boardService.deleteCard(cardId).subscribe(
+			result => {
+				//TODO: activity report
+			},
+			console.error
+		);
+	}
+
+	moveToColumn(cardId, columnTitle) {
+		const column = this.currentBoard.columns.find(column => column.title === columnTitle);
+		const columnId = column.id;
+
+		this.boardService.moveToColumn(cardId, columnId).subscribe(
+			result => {
+				//TODO: activity report
+			},
+			console.error
+		);
+	}
 };

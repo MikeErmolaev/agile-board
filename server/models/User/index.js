@@ -1,6 +1,7 @@
 'use strict';
 
 const User = require('./user.model');
+const { populateQueries } = require('../../utils/model.utils');
 
 const UserDao = {
 	saveUser(email, password, name) {
@@ -10,16 +11,13 @@ const UserDao = {
 			name
 		});
 
-		return newUser.save().then(user => user.toObject());
+		return newUser.save().then(user => user.toObject(), err => { throw err });
 	},
 
 	authenticateUser(email, password) {
 		return new Promise((resolve, reject) => {
 			User.findOne({ email })
-				.populate({
-							path: 'boards',
-							select: 'id title creator'
-				})
+				.populate(populateQueries.USER)
 				.exec((err, user) => {
 					if (!err && !user) {
 						return reject(401);
@@ -36,17 +34,14 @@ const UserDao = {
 						} else {
 							reject(401);
 						}
-					});
+					}, err => { throw err });
 			});
 		}); 
 	},
 
 	getUserById(id) {
 		return User.findById(id)
-					.populate({
-						path: 'boards',
-						select: 'id title creator'
-					})
+					.populate(populateQueries.USER)
 					.exec()
 					.then(user => {
 						if (!user) {
@@ -54,7 +49,7 @@ const UserDao = {
 						}
 
 						return user.toObject()
-					});
+					}, err => { throw err });
 	}
 };
 

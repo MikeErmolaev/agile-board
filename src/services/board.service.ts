@@ -52,10 +52,36 @@ export class BoardService {
 	addCard(title, columnId, boardId) {
 		const authHeaders = this.requestService.getAuthHeaders();
 		const body = this.requestService.getBody({ title, columnId, boardId });
-		console.log(body);
+
 		return this.http.post(`${serverUrl}/api/protected/card/add`, body, { headers: authHeaders })
 						.map(extractData)
 						.map(this.updateBoard);
+	}
+
+	toggleCardState(cardId, newState) {
+		const authHeaders = this.requestService.getAuthHeaders();
+		const body = this.requestService.getBody({ cardId, newState });
+	
+		return this.http.put(`${serverUrl}/api/protected/card/toggle`, body, { headers: authHeaders })
+						.map(extractData)
+						.map(this.updateBoard);
+	}
+
+	deleteCard(cardId) {
+		const authHeaders = this.requestService.getAuthHeaders();
+
+		return this.http.delete(`${serverUrl}/api/protected/card/delete/${cardId}`, { headers: authHeaders })
+						.map(extractData)
+						.map(this.updateBoard);
+	}
+
+	moveToColumn(cardId, columnId) {
+		const authHeaders = this.requestService.getAuthHeaders();
+		const body = this.requestService.getBody({ cardId, columnId });
+
+		return this.http.put(`${serverUrl}/api/protected/card/move`, body, { headers: authHeaders })
+			.map(extractData)
+			.map(this.updateBoard);
 	}
 
 	private updateBoard = data => {

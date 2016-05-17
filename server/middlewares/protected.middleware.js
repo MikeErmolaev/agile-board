@@ -116,13 +116,48 @@ const protectedMiddlewares = {
 	addCard(req, res, next) {
 		const { title, columnId, boardId } = req.body;
 
-		console.log(req.body);
-
 		if (!title || !columnId || !boardId) {
 			return res.sendStatus(400);
 		}
 
 		BoardDao.addCard(title, columnId, boardId).then(board => {
+			sendBoard(res, board);
+		}, res.sendStatus.bind(res)).catch(next);
+	},
+
+	toggleCardState(req, res, next) {
+		const { cardId, newState } = req.body;
+
+		if (!cardId || newState === null || newState === undefined) {
+			return res.sendStatus(400);
+		}
+
+		BoardDao.toggleCardState(cardId, newState).then(board => {
+			sendBoard(res, board);
+		}, res.sendStatus.bind(res)).catch(next);
+	},
+
+	deleteCard(req, res, next) {
+		const { cardId } = req.params;
+
+		if (!cardId) {
+			return res.sendStatus(400);
+		}
+
+		BoardDao.deleteCard(cardId).then(board => {
+			sendBoard(res, board);
+		}, res.sendStatus.bind(res)).catch(next);
+	},
+
+	moveToColumn(req, res, next) {
+		console.log('MOVING');
+		const { cardId, columnId } = req.body;
+
+		if (!cardId || !columnId) {
+			return res.sendStatus(400);
+		}
+
+		BoardDao.moveToColumn(cardId, columnId).then(board => {
 			sendBoard(res, board);
 		}, res.sendStatus.bind(res)).catch(next);
 	}

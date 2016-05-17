@@ -6,12 +6,16 @@
 				<p class="cross" (click)="deleteColumn(column.id)">˟</p>
 			</div>
 			<ul class="card-list">
-				<li class="card" *ngFor="let card of column.cards">
+				<li [class.complete]="card.done" class="card" *ngFor="let card of column.cards">
 					<div class="card-header">
 						<p class="card-title">{{ card.title }}</p>
-						<p class="cross" (click)="deleteColumn(card.id)">˟</p>
+						<p class="cross" (click)="deleteCard(card.id)">˟</p>
 					</div>
-					<div class="checkbox"></div>
+					<select (change)="moveToColumn(card.id, $event.target.value)">
+						<option disabled selected>Move to...</option>
+						<option *ngFor="let col of currentBoard.columns">{{ col.title }}</option>
+					</select>
+					<div class="checkbox" (click)="toggleCardState(card.id, card.done)"></div>
 				</li>
 			</ul>
 			<input class="card-input" #newCard (keyup.enter)="addCard(newCard.value, column.id)" type="text" placeholder="Add new card...">

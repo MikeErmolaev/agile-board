@@ -1,20 +1,22 @@
-<h1>Enter agile-board</h1>
-<form (ngSubmit)="onSubmit(loginForm.value)" #loginForm="ngForm">
-	<div class="form-group">
-		<label for="email">E-mail</label>
-		<input class="form-control" type="text" ngControl="email" name="email" placeholder="e.g. spark4304@gmail.com" required #email="ngForm">
-		<div [hidden]="email.valid || email.pristine" class="form-warning">E-mail is required</div>
-	</div>
-	<div class="form-group">
-		<label for="password">Password</label>
-		<input class="form-control" type="text" ngControl="password" name="password" placeholder="e.g. ********" required #password="ngForm">
-		<div [hidden]="password.valid || password.pristine" class="form-warning">Password is required</div>
-	</div>
-	
-	<button class="button-primary" type="submit" [disabled]="!loginForm.form.valid">Log in</button>
-</form>
-<p>Haven't account yet? 
-	<a [routerLink]="['Signup']">
-		Create new one.
-	</a>
-</p>
+<div class="container">
+	<h1>Enter agile-board</h1>
+	<form (ngSubmit)="onSubmit(loginForm.value)" #loginForm="ngForm">
+		<div class="form-group">
+			<label for="email">E-mail</label>
+			<input class="form-control" type="text" ngControl="email" name="email" placeholder="e.g. spark4304@gmail.com" required #email="ngForm">
+			<div [hidden]="email.valid || email.pristine" class="form-warning">E-mail is required</div>
+		</div>
+		<div class="form-group">
+			<label for="password">Password</label>
+			<input class="form-control" type="text" ngControl="password" name="password" placeholder="e.g. ********" required #password="ngForm">
+			<div [hidden]="password.valid || password.pristine" class="form-warning">Password is required</div>
+		</div>
+		
+		<button class="button-primary" type="submit" [disabled]="!loginForm.form.valid">Log in</button>
+	</form>
+	<p>Haven't account yet? 
+		<a [routerLink]="['Signup']">
+			Create new one.
+		</a>
+	</p>
+</div>

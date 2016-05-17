@@ -6,6 +6,7 @@ import { AuthService } from '../../../../services/auth.service';
 @Component({
 	selector: 'log-in',
 	template: require('./template/login.component.html'),
+	styles: [require('./style/login.component.styl')],
 	directives: [RouterLink]
 })
 export class LoginComponent { 
@@ -23,7 +24,7 @@ export class LoginComponent {
 							},
 							error => {
 								//show error modal
-								alert('Something went wrong. Look at logs');
+								alert(error);
 							}
 						);
 	}

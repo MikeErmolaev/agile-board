@@ -23,4 +23,10 @@ router.delete(`${apiPath}/column/delete/:columnId`, protectedMiddlewares.deleteC
 
 router.post(`${apiPath}/card/add`, protectedMiddlewares.addCard);
 
+router.put(`${apiPath}/card/toggle`, protectedMiddlewares.toggleCardState);
+
+router.delete(`${apiPath}/card/delete/:cardId`, protectedMiddlewares.deleteCard);
+
+router.put(`${apiPath}/card/move`, protectedMiddlewares.moveToColumn);
+
 module.exports = router;
